@@ -1,4 +1,4 @@
-import { validate } from "../src/CpfValidatorBase"
+import { validateCpf } from "../src/CpfValidator"
 
 // Success
 
@@ -10,6 +10,13 @@ test("GIVEN a valid CPF with no mask, WHEN validate, THEN assert true", function
     expectTrue("11590636058")
 })
 
+test("GIVEN a valid CPF with first verifier equals 2, WHEN validate, THEN assert true", function() {
+    expectTrue("252.002.360-02")
+})
+
+test("GIVEN a valid CPF with first verifier less than 2, WHEN validate, THEN assert true", function() {
+    expectTrue("862.869.870-10")
+})
 
 // Errors
 
@@ -18,7 +25,7 @@ test("GIVEN a null CPF, WHEN validate, THEN assert false", function() {
 })
 
 test("GIVEN a undefined CPF, WHEN validate, THEN assert false", function() {
-    expectUndefined(undefined)
+    expectFalse(undefined)
 })
 
 test("GIVEN a invalid CPF, WHEN validate, THEN assert false", function() {
@@ -45,14 +52,20 @@ test("GIVEN a CPF with size more than 14, WHEN validate, THEN assert false", fun
     expectFalse("115.906.360.000-00")
 })
 
+test("GIVEN a CPF with size more than 14, WHEN validate, THEN assert false", function() {
+    expectFalse("115.906.360.000-00")
+})
+
+test("GIVE a All 1 CPF, WHEN validate, THEN assert false", function() {
+    expectFalse("11111111111")
+})
+
+
+
 function expectTrue(cpf: string) {
-    expect(validate(cpf)).toBe(true)
+    expect(validateCpf(cpf)).toBe(true)
 }
 
 function expectFalse(cpf?: string | null) {
-    expect(validate(cpf)).toBe(false)
-}
-
-function expectUndefined(cpf?: string | null) {
-    expect(validate(cpf)).toBe(undefined)
+    expect(validateCpf(cpf)).toBe(false)
 }
