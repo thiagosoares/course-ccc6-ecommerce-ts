@@ -60,6 +60,13 @@ test("GIVE a All 1 CPF, WHEN validate, THEN assert false", function() {
     expectFalse("11111111111")
 })
 
+test("GIVE a invalid CPF with letters, WHEN validate, THEN assert false", function() {
+    expectFalse("111.111.11X-11")
+})
+
+test("Test", function() {
+    validateCpf("123456789XY")
+})
 
 
 function expectTrue(cpf: string) {
