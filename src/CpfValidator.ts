@@ -9,8 +9,8 @@ export default class CpfValidator {
 
         try {
             let digits = this.splitDigits(cpf)
-            let bodyDigits = this.getBodyDigits(digits)
             this.validateFormat(digits)
+            let bodyDigits = this.getBodyDigits(digits)
             let firstCheckDigit = this.getCheckDigit(bodyDigits)
             this.concatFirstDigitOnBody(bodyDigits, firstCheckDigit)
             let secondCheckDigit = this.getCheckDigit(bodyDigits)
@@ -49,8 +49,9 @@ export default class CpfValidator {
 
     private static getCheckDigit(digits: string[]) {
         let sumFirstCheckDigit = 0
+        let baseMultiplier = digits.length + 1
         for (let i = 0; i < digits.length; i++) {
-            sumFirstCheckDigit = sumFirstCheckDigit + ( digits.length + 1 - i ) * parseInt(digits[i]);
+            sumFirstCheckDigit += ( baseMultiplier - i ) * parseInt(digits[i]);
         }
         let divisionRest = (sumFirstCheckDigit % this.CPF_LENGTH);
         return (divisionRest < 2) ? 0 : this.CPF_LENGTH - divisionRest;
