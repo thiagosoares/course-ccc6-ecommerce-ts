@@ -1,46 +1,73 @@
 
-export function validateCpf (cpf?: string | null) {
 
-    if (cpf == null) {
-        return false
-    }
-    if (cpf.length < 11 && cpf.length > 14) {
-        return false
-    }
+export default class CpfValidator {
 
-    cpf = cpf
-        .replace('.','')
-        .replace('.','')
-        .replace('-','')
-        .replace(" ","");
+    private static CPF_LENGTH = 11;
+    private static CPF_BODY_LENGTH = 9;
 
-    if (cpf.split("").every(c => c === cpf?.substring(0,1))) { // TODO FUNC Condição para evitar cpfs como 111.111.111-11
-        return false
-    }
+    static validateCpf (cpf: string) {
 
-    let sumFirstCheckDigit = 0
-    let sumSecondCheckDigit = 0
-    let firstCheckDigit, secondCheckDigit
-    let divisionRest
-
-    // For into each number on CPF - Make Sum
-    for (let nCount = 1; nCount < cpf.length -1; nCount++) {  // TODO For confurso. Não Percorre até os Digitos
-        let digito = parseInt(cpf.substring(nCount -1, nCount));
-        sumFirstCheckDigit = sumFirstCheckDigit + ( 11 - nCount ) * digito;
-        sumSecondCheckDigit = sumSecondCheckDigit + ( 12 - nCount ) * digito;
+        try {
+            let digits = this.splitDigits(cpf)
+            let bodyDigits = this.getBodyDigits(digits)
+            this.validateFormat(digits)
+            let firstCheckDigit = this.getCheckDigit(bodyDigits)
+            this.concatFirstDigitOnBody(bodyDigits, firstCheckDigit)
+            let secondCheckDigit = this.getCheckDigit(bodyDigits)
+            let originalCheckDigit = this.getOriginalCheckDigits(digits)
+            let calculatedCheckDigit = this.getCalculatedCheckDigit(firstCheckDigit, secondCheckDigit)
+            return originalCheckDigit == calculatedCheckDigit
+        } catch (e) {
+            return false
+        }
     }
 
-    divisionRest = (sumFirstCheckDigit % 11);
+    private static getCalculatedCheckDigit(firstCheckDigit: number, secondCheckDigit: number) {
+        return firstCheckDigit + "" + secondCheckDigit;
+    }
 
-    firstCheckDigit = (divisionRest < 2) ? 0 : 11 - divisionRest;
-    sumSecondCheckDigit += 2 * firstCheckDigit;
+    private static splitDigits(cpf: string) {
+        return this.unmask(cpf).split("")
+    }
 
-    divisionRest = (sumSecondCheckDigit % 11);
+    private static getBodyDigits(digits: string[]) {
+        return digits.slice(0, this.CPF_BODY_LENGTH);
+    }
 
-    secondCheckDigit = divisionRest < 2 ? 0 : 11 - divisionRest
+    private static getCheckDigits(digits: string[]) {
+        return digits.slice(this.CPF_BODY_LENGTH, this.CPF_LENGTH);
+    }
 
-    let originalCheckDigit = cpf.substring(cpf.length-2, cpf.length);
-    let calculatedCheckDigit = "" + firstCheckDigit + "" + secondCheckDigit;
+    private static validateFormat(cpf: string[]) {
+        if (cpf.length != this.CPF_LENGTH) {
+            throw new Error("Invalid CPF size");
+        }
+        if (cpf.every(c => c === cpf[0])) {
+            throw new Error("Invalid CPF pattern");
+        }
+    }
 
-    return originalCheckDigit == calculatedCheckDigit; // TODO Nome de Variavel
+    private static getCheckDigit(digits: string[]) {
+        let sumFirstCheckDigit = 0
+        for (let i = 0; i < digits.length; i++) {
+            sumFirstCheckDigit = sumFirstCheckDigit + ( digits.length + 1 - i ) * parseInt(digits[i]);
+        }
+        let divisionRest = (sumFirstCheckDigit % this.CPF_LENGTH);
+        return (divisionRest < 2) ? 0 : this.CPF_LENGTH - divisionRest;
+    }
+
+    private static concatFirstDigitOnBody(bodyDigits: string[], firstCheckDigit: number) {
+        bodyDigits.push(firstCheckDigit.toString())
+    }
+
+    private static getOriginalCheckDigits(digits: string[]) {
+        return this.getCheckDigits(digits).join('')
+    }
+
+    private static unmask(cpf: string) {
+        return cpf.replace(/\D/g, '');
+    }
+
 }
+
+
