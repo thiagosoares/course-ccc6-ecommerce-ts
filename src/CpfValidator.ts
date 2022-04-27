@@ -23,7 +23,7 @@ export default class CpfValidator {
     }
 
     private static getCalculatedCheckDigit(firstCheckDigit: number, secondCheckDigit: number) {
-        return firstCheckDigit + "" + secondCheckDigit;
+        return `${firstCheckDigit}${secondCheckDigit}`;
     }
 
     private static splitDigits(cpf: string) {
@@ -35,14 +35,15 @@ export default class CpfValidator {
     }
 
     private static getCheckDigits(digits: string[]) {
-        return digits.slice(this.CPF_BODY_LENGTH, this.CPF_LENGTH);
+        // return digits.slice(this.CPF_BODY_LENGTH, this.CPF_LENGTH);
+        return digits.slice(-2);
     }
 
-    private static validateFormat(cpf: string[]) {
-        if (cpf.length != this.CPF_LENGTH) {
+    private static validateFormat(digits: string[]) {
+        if (digits.length != this.CPF_LENGTH) {
             throw new Error("Invalid CPF size");
         }
-        if (cpf.every(c => c === cpf[0])) {
+        if (digits.every(c => c === digits[0])) {
             throw new Error("Invalid CPF pattern");
         }
     }

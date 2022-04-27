@@ -38,16 +38,8 @@ test("GIVEN a CPF with invalid verifying digit, WHEN validate, THEN assert false
     expectFalse("115.906.360-00")
 })
 
-test("GIVEN a CPF with invalid verifying digit, WHEN validate, THEN assert false", function() {
-    expectFalse("115.906.360-00")
-})
-
 test("GIVEN a CPF with size less than 11, WHEN validate, THEN assert false", function() {
     expectFalse("1159063600")
-})
-
-test("GIVEN a CPF with size more than 14, WHEN validate, THEN assert false", function() {
-    expectFalse("115.906.360.000-00")
 })
 
 test("GIVEN a CPF with size EQUALS 13, WHEN validate, THEN assert false", function() {
@@ -67,8 +59,19 @@ test("GIVE a invalid CPF with letters, WHEN validate, THEN assert false", functi
 })
 
 test("GIVE a invalid CPF with letters on check digits, WHEN validate, THEN assert false", function() {
-    CpfValidator.validateCpf("115.906.360.000-XY")
+    expectFalse("115.906.360.000-XY")
 })
+
+const wrongAllDigits = [
+    "111.111.111-11",
+    "222.222.333-44",
+    "333.333.333-33"
+]
+
+test.each(wrongAllDigits)("GIVE a All %p CPF, WHEN validate, THEN assert false", function(cpf) {
+    expectFalse(cpf)
+})
+
 
 function expectTrue(cpf: string) {
     expect(CpfValidator.validateCpf(cpf)).toBe(true)
