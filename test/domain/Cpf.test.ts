@@ -2,7 +2,7 @@
 
 // Success
 
-import Cpf from "../src/Cpf";
+import Cpf from "../../src/domain/Cpf";
 
 test("GIVEN a valid CPF with mask, WHEN validate, THEN assert true", function() {
     expectValid("115.906.360-58")
