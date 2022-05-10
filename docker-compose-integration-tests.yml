@@ -1,0 +1,36 @@
+version: '3.3'
+
+services:
+  postgresql:
+    image: postgres:14.2-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=ecommerce
+      - POSTGRES_PASSWORD=ecommerce
+      - POSTGRES_USER=ecommerce
+    volumes:
+      - ./docker/.postgres-data-tests:/var/lib/postgresql/data
+      - ./docker/data/01-start.sql:/docker-entrypoint-initdb.d/01-start.sql
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+  ecommerce:
+    build:
+      context: .
+      dockerfile: Dockerfile
+#      target: base
+    environment:
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PASSWORD=ecommerce
+      - POSTGRES_USER=ecommerce
+    volumes:
+      - ./src:/home/node/app
+      - ./nodemon.json:/home/node/app/nodemon.json
+#    container_name: ts-node-docker
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    command: npm run main

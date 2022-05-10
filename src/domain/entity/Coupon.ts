@@ -3,11 +3,15 @@ export default class Coupon {
 
     static ERROR_INVALID_COUPON = "Invalid coupon"
 
-    constructor(readonly code: string, readonly percentage: number) {
-        this.validate(code, percentage)
+    constructor(
+        readonly code: string,
+        readonly percentage: number,
+        readonly expireDate: Date = new Date()
+    ) {
+        this.validate(percentage)
     }
 
-    private validate(code: string, percentage: number) {
+    private validate(percentage: number) {
         this.validatePercentage(percentage)
     }
 
@@ -15,6 +19,10 @@ export default class Coupon {
         if (percentage < 0) {
             throw new Error(Coupon.ERROR_INVALID_COUPON)
         }
+    }
+
+    isExpired (today: Date) {
+        return today.getTime() > this.expireDate.getTime();
     }
 
     applyDiscount(total: number) {

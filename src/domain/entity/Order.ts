@@ -1,12 +1,15 @@
 import Coupon from "./Coupon";
 import Cpf from "./Cpf";
 import OrderItem from "./OrderItem";
+import Freight from "./Freight";
+import Item from "./Item";
 
 export default class Order {
 
     readonly cpf: Cpf
     private coupon?: Coupon
     private items: OrderItem[]
+    freight = new Freight();
 
     constructor(cpf: string, coupon?: Coupon) {
         this.cpf = new Cpf(cpf)
@@ -18,8 +21,9 @@ export default class Order {
         return this.items.length
     }
 
-    addItem(item: OrderItem) {
-        this.items.push(item)
+    addItem (item: Item, quantity: number) {
+        this.freight.addItem(item, quantity);
+        this.items.push(new OrderItem(item.idItem, item.price, quantity));
     }
 
     applyCoupon(coupon: Coupon) {
@@ -29,6 +33,7 @@ export default class Order {
     getTotalOrder() {
         let total = this.buildTotal()
         total = this.applyCouponDiscount(total);
+        total = this.applyFreight(total);
         return total
     }
 
@@ -45,4 +50,10 @@ export default class Order {
         }
         return total;
     }
+
+    private applyFreight(total: number) {
+        total += this.freight.getTotal();
+        return total;
+    }
+
 }

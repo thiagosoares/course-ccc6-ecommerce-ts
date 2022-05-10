@@ -10,7 +10,31 @@ npx ts-jest config:init
 
 
 
-## Run Test
-```npx jest```
+## Run All Test
+
+### Start Database and Api
+
+```
+
+```
 
 
+```
+npx jest
+```
+
+
+## Coverage 
+```
+npm run coverage
+```
+
+
+## Strat Api
+```
+npm rum main
+```
+
+
+## ToDos
+- [ ] Segregate Unit and Integration Tests
